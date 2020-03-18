@@ -19,7 +19,8 @@ import (
 
 func Completer(d prompt.Document) []prompt.Suggest {
 	s := []prompt.Suggest{
-		{Text: "hosts", Description: "Search host"},
+		{Text: "hosts <keyword>", Description: "Search host"},
+		{Text: "exit", Description: "Exit Program"},
 	}
 	return prompt.FilterHasPrefix(s, d.GetWordBeforeCursor(), true)
 }
