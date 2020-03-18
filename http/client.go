@@ -7,20 +7,21 @@ import (
 )
 
 type VmsListRequest struct {
-	offset int
+	Offset int `json:"offset"`
 }
 
 func MakeVmsListRequestPayload(offset int) VmsListRequest {
-	return VmsListRequest{offset: offset}
+	return VmsListRequest{Offset: offset}
 }
 
 func GetVmsLists(url string, username string, password string, payload VmsListRequest) *http.Response {
-	jsonData, _ := json.Marshal(payload)
-	buff := bytes.NewBuffer(jsonData)
+	pbytes, _ := json.Marshal(payload)
+	buff := bytes.NewBuffer(pbytes)
 	req, err := http.NewRequest("POST", url, buff)
 	if err != nil {
 		panic(err)
 	}
+	req.Header.Set("Content-Type", "application/json")
 	req.SetBasicAuth(username, password)
 	cli := &http.Client{}
 	resp, err := cli.Do(req)
