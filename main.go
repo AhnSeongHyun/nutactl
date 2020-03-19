@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"github.com/c-bata/go-prompt"
 	config "github.com/nutactl/config"
+	constant "github.com/nutactl/constant"
 	command "github.com/nutactl/entity"
 	host "github.com/nutactl/entity"
 	client "github.com/nutactl/http"
@@ -16,22 +17,8 @@ import (
 	"strings"
 )
 
-func Completer(d prompt.Document) []prompt.Suggest {
-	s := []prompt.Suggest{
-		{Text: "hosts <keyword>", Description: "Search host"},
-		{Text: "exit", Description: "Exit Program"},
-	}
-	return prompt.FilterHasPrefix(s, d.GetWordBeforeCursor(), true)
-}
+const VERSION string = "0.0.1"
 
-func ConvertToCommand(input string) command.Command {
-	s := strings.Split(input, " ")
-
-	return command.Command{
-		Cmd:  s[0],
-		Args: s[1:],
-	}
-}
 func main() {
 	cfg := config.MakeConfig()
 
@@ -45,12 +32,31 @@ func main() {
 		RunCommand(cfg, cmd)
 	}
 }
+func Completer(d prompt.Document) []prompt.Suggest {
+	s := []prompt.Suggest{
+		{Text: "hosts <keyword>", Description: "Search host"},
+		{Text: "version", Description: "Version"},
+		{Text: "exit", Description: "Exit Program"},
+	}
+	return prompt.FilterHasPrefix(s, d.GetWordBeforeCursor(), true)
+}
+
+func ConvertToCommand(input string) command.Command {
+	s := strings.Split(input, " ")
+
+	return command.Command{
+		Cmd:  s[0],
+		Args: s[1:],
+	}
+}
 
 func RunCommand(cfg config.Config, c command.Command) {
-	if c.Cmd == "hosts" {
+	if c.Cmd == constant.Hosts {
 		RunHosts(cfg, c)
-	} else if c.Cmd == "exit" {
+	} else if c.Cmd == constant.Exit {
 		RunExit()
+	} else if c.Cmd == constant.Version {
+		fmt.Println("%s", VERSION)
 	} else {
 		fmt.Println("not implemented.")
 	}
@@ -117,7 +123,7 @@ func GetAllHostsByKeyword(cfg config.Config, keyword string) list.List {
 		if len(nicList) > 0 {
 			var ipEndPointList = nicList[0].(map[string]interface{})["ip_endpoint_list"].([]interface{})
 			for _, endpoint := range ipEndPointList {
-				if endpoint.(map[string]interface{})["type"] == "LEARNED" {
+				if endpoint.(map[string]interface{})["type"] == constant.Learned {
 					ip = endpoint.(map[string]interface{})["ip"].(string)
 				}
 			}

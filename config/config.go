@@ -20,10 +20,8 @@ func MakeConfig() Config {
 	if len(UserName) == 0 {
 		panic("no value NUTANIX_USERNAME")
 	}
-
 	if len(Password) == 0 {
 		panic("no value NUTANIX_PASSWORD")
 	}
-
 	return Config{NutanixUrl: NutanixUrl, UserName: UserName, Password: Password}
 }
