@@ -10,7 +10,7 @@ export NUTANIX_USERNAME=user
 export NUTANIX_PASSWORD=password
 ```
 
-### Command 
+### command 
 
 - Search host
     - *hosts* `<keyword>`
