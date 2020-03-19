@@ -14,6 +14,7 @@ export NUTANIX_PASSWORD=password
 
 - Search host
     - **hosts** `<keyword>`
+    
         ```shell 
         Please insert command
         > hosts dns
