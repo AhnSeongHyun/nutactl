@@ -13,15 +13,15 @@ export NUTANIX_PASSWORD=password
 ### command 
 
 - Search host
-    - *hosts* `<keyword>`
+    - **hosts** `<keyword>`
         ```shell 
         Please insert command
         > hosts dns
         Your input: hosts dns
          #          HOST                IP       
         --- --------------------- ---------------
-         0   dnsmasq1                10.10.1.1
-         1   dnsmasq2                10.10.2.2 
+         0   dns-server1               10.10.1.1
+         1   dns-server2                10.10.2.2 
         > exit
         Bye, Bye 
         ```
