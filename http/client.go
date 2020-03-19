@@ -7,11 +7,12 @@ import (
 )
 
 type VmsListRequest struct {
-	Offset int `json:"offset"`
+	Length int    `json:"length"`
+	Filter string `json:"filter"`
 }
 
-func MakeVmsListRequestPayload(offset int) VmsListRequest {
-	return VmsListRequest{Offset: offset}
+func MakeVmsListRequestPayload(length int, filter string) VmsListRequest {
+	return VmsListRequest{Length: length, Filter: filter}
 }
 
 func GetVmsLists(url string, username string, password string, payload VmsListRequest) *http.Response {
