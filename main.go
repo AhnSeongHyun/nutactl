@@ -4,7 +4,6 @@ import (
 	"container/list"
 	"encoding/json"
 	"fmt"
-	"github.com/alexeyco/simpletable"
 	"github.com/c-bata/go-prompt"
 	config "github.com/nutactl/config"
 	command "github.com/nutactl/entity"
@@ -37,20 +36,19 @@ func main() {
 	cfg := config.MakeConfig()
 
 	fmt.Println("Please insert command")
-	tableUI := table.MakeTable()
 
 	for {
 		input := prompt.Input("> ", Completer)
 		fmt.Println("Your input: " + input)
 		cmd := ConvertToCommand(input)
 
-		RunCommand(cfg, cmd, *tableUI)
+		RunCommand(cfg, cmd)
 	}
 }
 
-func RunCommand(cfg config.Config, c command.Command, tableUI simpletable.Table) {
+func RunCommand(cfg config.Config, c command.Command) {
 	if c.Cmd == "hosts" {
-		RunHosts(cfg, c, tableUI)
+		RunHosts(cfg, c)
 	} else if c.Cmd == "exit" {
 		RunExit()
 	} else {
@@ -58,8 +56,9 @@ func RunCommand(cfg config.Config, c command.Command, tableUI simpletable.Table)
 	}
 }
 
-func RunHosts(cfg config.Config, c command.Command, tableUI simpletable.Table) {
+func RunHosts(cfg config.Config, c command.Command) {
 	keyword := ""
+	tableUI := table.MakeTable()
 	if len(c.Args) > 0 {
 		keyword = c.Args[0]
 	}
@@ -70,7 +69,7 @@ func RunHosts(cfg config.Config, c command.Command, tableUI simpletable.Table) {
 	for h := hostList.Front(); h != nil; h = h.Next() {
 		var hostEntity = h.Value.(host.Host)
 		table.InsertHostData(
-			tableUI,
+			*tableUI,
 			i,
 			hostEntity.HostName,
 			hostEntity.IP)
@@ -83,15 +82,16 @@ func RunHosts(cfg config.Config, c command.Command, tableUI simpletable.Table) {
 
 func RunExit() {
 
-	fmt.Println("Bye, Bye 👋")
+	fmt.Println("Bye, Bye")
 	os.Exit(3)
 }
 
 func GetAllHostsByKeyword(cfg config.Config, keyword string) list.List {
-	requestPayload := client.MakeVmsListRequestPayload(999)
-	resp := client.GetVmsLists(cfg.NutanixUrl+"/vms/lists", cfg.UserName, cfg.Password, requestPayload)
+	filter := fmt.Sprintf("vm_name==.*%s.*", keyword)
+	requestPayload := client.MakeVmsListRequestPayload(999, filter)
+	resp := client.GetVmsLists(cfg.NutanixUrl+"/vms/list", cfg.UserName, cfg.Password, requestPayload)
 	if resp.StatusCode != http.StatusOK {
-		print("Fail nutanix request")
+		fmt.Println("Fail nutanix request : %d", resp.StatusCode)
 		return list.List{}
 	}
 	defer resp.Body.Close()
@@ -99,11 +99,12 @@ func GetAllHostsByKeyword(cfg config.Config, keyword string) list.List {
 	if err != nil {
 		panic(err)
 	}
-
 	var result map[string]interface{}
 	json.Unmarshal([]byte(data), &result)
+
 	var hostList = list.List{}
 	var entities = result["entities"].([]interface{})
+
 	for _, entity := range entities {
 		var status = entity.(map[string]interface{})["status"].(map[string]interface{})
 		var hostName = status["name"].(string)
