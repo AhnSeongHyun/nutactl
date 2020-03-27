@@ -26,6 +26,10 @@ func main() {
 
 	for {
 		input := prompt.Input("> ", Completer)
+		input = strings.Trim(input, " ")
+		if len(input) == 0 {
+			continue
+		}
 		fmt.Println("Your input: " + input)
 		cmd := ConvertToCommand(input)
 
