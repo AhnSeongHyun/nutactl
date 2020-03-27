@@ -1,5 +1,5 @@
-nutactl 
-=======
+nutactl ![Go](https://github.com/AhnSeongHyun/nutactl/workflows/Go/badge.svg?branch=master)
+============
 > CLI using Nutanix API v3
 
 
